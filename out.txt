@@ -1,0 +1,8 @@
+Open divs at line 346:
+[0] Line 3: <div class="">
+[1] Line 18: <div class="flex gap-6">
+[2] Line 347: <div class="">
+[3] Line 348: <div class="space-y-6">
+[4] Line 349: <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+[5] Line 351: <div class="space-y-3 text-sm">
+[6] Line 352: <div class="flex justify-between py-2 border-b border-gray-100">
