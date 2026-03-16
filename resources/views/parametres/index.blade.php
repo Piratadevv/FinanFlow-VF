@@ -346,19 +346,7 @@
                 {{-- TAB 4: Sécurité --}}
                 <div x-show="activeTab === 'security'" x-cloak>
                     <div class="space-y-6">
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                            <h2 class="text-lg font-semibold text-gray-800 mb-4">Politique de Mot de Passe</h2>
-                            <div class="space-y-3 text-sm">
-                                <div class="flex justify-between py-2 border-b border-gray-100"><span
-                                        class="text-gray-500">Longueur minimale</span><span class="font-medium">8
-                                        caractères</span></div>
-                                <div class="flex justify-between py-2 border-b border-gray-100"><span
-                                        class="text-gray-500">Expiration</span><span class="font-medium">Jamais</span></div>
-                                <div class="flex justify-between py-2 border-b border-gray-100"><span
-                                        class="text-gray-500">Tentatives max avant blocage</span><span
-                                        class="font-medium">5</span></div>
-                            </div>
-                        </div>
+
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                             <h2 class="text-lg font-semibold text-gray-800 mb-4">Historique des Connexions</h2>
                             <div class="overflow-x-auto">
@@ -423,10 +411,10 @@
                                         <p class="text-xs text-gray-400">Light / Dark</p>
                                     </div>
                                     <button @click="prefs.theme = prefs.theme === 'light' ? 'dark' : 'light'; savePrefs()"
-                                        class="relative w-12 h-6 rounded-full transition-colors"
-                                        :class="prefs.theme === 'dark' ? 'bg-blue-600' : 'bg-gray-300'"><span
-                                            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
-                                            :class="prefs.theme === 'dark' ? 'translate-x-6' : ''"></span></button>
+                                        class="px-4 py-2 border rounded-lg text-sm font-medium transition-colors"
+                                        :class="prefs.theme === 'dark' ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-800 border-gray-300'">
+                                        <span x-text="prefs.theme === 'dark' ? 'Mode Clair' : 'Mode Sombre'"></span>
+                                    </button>
                                 </div>
                                 <div class="flex items-center justify-between py-2">
                                     <div>
@@ -749,7 +737,7 @@
                         if (saved) { try { Object.assign(this.prefs, JSON.parse(saved)); } catch (e) { } }
                     },
 
-                    formatMontant(v) { return v != null ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v) + ' DH' : '0,00 DH'; },
+                    formatMontant(v) { return window.ffFormatMontant(v); },
                     formatDateTime(d) { if (!d) return ''; return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); },
                     relativeTime(d) {
                         if (!d) return ''; const now = new Date(); const date = new Date(d); const m = Math.floor((now - date) / 60000);
@@ -779,8 +767,19 @@
                         this.passwordErrors = {}; this.pwSubmitting = true;
                         try {
                             const res = await fetch('/api/account/password', { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrf() }, body: JSON.stringify(this.passwordForm) });
-                            if (res.ok) { this.toast('Mot de passe changé. Reconnexion...'); setTimeout(() => window.location.href = '/login', 3000); }
-                            else if (res.status === 422) { const e = await res.json(); for (const [k, v] of Object.entries(e.errors || {})) this.passwordErrors[k] = Array.isArray(v) ? v[0] : v; }
+                            if (res.ok) {
+                                this.passwordForm = { current_password: '', password: '', password_confirmation: '' };
+                                this.showCurrentPw = false; this.showNewPw = false;
+                                this.toast('Mot de passe changé. Reconnexion...');
+                                setTimeout(() => window.location.href = '/login', 3000);
+                            }
+                            else if (res.status === 422) {
+                                const e = await res.json();
+                                for (const [k, v] of Object.entries(e.errors || {})) this.passwordErrors[k] = Array.isArray(v) ? v[0] : v;
+                                this.toast('Veuillez vérifier les informations saisies.', 'error');
+                            } else {
+                                this.toast('Une erreur est survenue lors de l\'enregistrement.', 'error');
+                            }
                         } catch (e) { this.toast('Erreur', 'error'); } finally { this.pwSubmitting = false; }
                     },
                     async submitUser() {
@@ -824,7 +823,18 @@
                             if (res.ok) { this.purgeStep = 0; this.purgeConfirmText = ''; this.dataStats.logs.count = 0; this.loginLogs = []; this.toast('Logs purgés'); }
                         } catch (e) { this.toast('Erreur', 'error'); }
                     },
-                    savePrefs() { localStorage.setItem('finanflow_prefs', JSON.stringify(this.prefs)); this.toast('Préférences enregistrées'); },
+                    savePrefs() {
+                        localStorage.setItem('finanflow_prefs', JSON.stringify(this.prefs));
+                        // Apply theme immediately
+                        if (this.prefs.theme === 'dark') {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                        // Notify all pages that prefs changed
+                        window.dispatchEvent(new CustomEvent('prefs-updated'));
+                        this.toast('Préférences enregistrées');
+                    },
                     logoutOthers() { this.toast('Autres sessions terminées'); },
                 }
             }

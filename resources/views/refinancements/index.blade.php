@@ -409,18 +409,10 @@
                     ],
 
                     formatMontant(v) {
-                        return v != null ? new Intl.NumberFormat('fr-FR', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        }).format(v) + ' DH' : '0,00 DH';
+                        return window.ffFormatMontant(v);
                     },
                     formatDate(d) {
-                        if (!d) return '';
-                        return new Date(d).toLocaleDateString('fr-FR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                        });
+                        return window.ffFormatDate(d);
                     },
 
                     calcInterets() {

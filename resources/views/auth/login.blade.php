@@ -26,7 +26,7 @@
             {{-- Title --}}
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-gray-800">Connexion</h1>
-                <p class="text-sm text-gray-500 mt-1">Gestion des Escomptes Bancaires</p>
+                <p class="text-sm text-gray-500 mt-1">Gestion des Opérations Bancaires</p>
             </div>
 
             {{-- Error --}}
@@ -85,14 +85,7 @@
             </form>
 
             {{-- Demo credentials --}}
-            <div class="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Comptes de démonstration
-                </p>
-                <div class="space-y-1 text-xs text-gray-600">
-                    <p><span class="font-medium">USERtest</span> / test123</p>
-                    <p><span class="font-medium">abderrahmane</span> / test123</p>
-                </div>
-            </div>
+
         </div>
     </div>
 </body>

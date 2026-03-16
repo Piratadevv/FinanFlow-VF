@@ -30,14 +30,20 @@ class LoginController extends Controller
         if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']], $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            $user = Auth::user();
+            $user->update([
+                'last_login_at' => now(),
+                'last_login_ip' => $request->ip(),
+            ]);
+
             AuditLogger::log(
                 'LOGIN',
                 'auth',
                 'info',
                 'Connexion utilisateur',
-                Auth::user()->username . ' s\'est connecté avec succès',
+                $user->username . ' s\'est connecté avec succès',
                 'user',
-                (string) Auth::id()
+                (string) $user->id
             );
 
             return redirect()->intended('/escomptes');
