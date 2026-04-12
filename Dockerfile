@@ -55,9 +55,11 @@ RUN mkdir -p database storage/app/public storage/framework/cache storage/framewo
     && chmod -R 775 storage bootstrap/cache database \
     && chown -R www-data:www-data storage bootstrap/cache database
 
-# Copy .env.example as .env if .env doesn't exist, then generate key and cache config
+# Set up .env for production build
 RUN cp .env.example .env \
-     && sed -i 's|APP_URL=http://localhost|APP_URL=https://finanflowunimagec.onrender.com|' .env \
+    && sed -i 's|APP_ENV=local|APP_ENV=production|' .env \
+    && sed -i 's|APP_DEBUG=true|APP_DEBUG=false|' .env \
+    && sed -i 's|APP_URL=http://localhost|APP_URL=https://finanflowunimagec.onrender.com|' .env \
     && php artisan key:generate --force \
     && php artisan config:cache \
     && php artisan route:cache \
@@ -67,5 +69,5 @@ RUN cp .env.example .env \
 # Expose port (Render sets the PORT env variable)
 EXPOSE 10000
 
-# Start command - Render sets PORT env var
+# Start command
 CMD php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
