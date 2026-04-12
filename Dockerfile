@@ -57,6 +57,7 @@ RUN mkdir -p database storage/app/public storage/framework/cache storage/framewo
 
 # Copy .env.example as .env if .env doesn't exist, then generate key and cache config
 RUN cp .env.example .env \
+     && sed -i 's|APP_URL=http://localhost|APP_URL=https://finanflowunimagec.onrender.com|' .env \
     && php artisan key:generate --force \
     && php artisan config:cache \
     && php artisan route:cache \
