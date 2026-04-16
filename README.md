@@ -2,17 +2,17 @@
 
 Application de **Gestion des Escomptes et Refinancements**, développée avec un backend robuste en Laravel (PHP) et un front-end réactif utilisant Blade, Tailwind CSS et Alpine.js.
 
-## 🛠️ Prérequis
+##  Prérequis
 
 Avant de lancer le projet, assurez-vous d'avoir installé les outils suivants sur votre machine principale :
 - **PHP** (version >= 8.2)
 - **Composer** (pour gérer les dépendances PHP)
 - **Node.js** & **npm** (pour installer et compiler les modules front-end)
-- **Git** (pour cloner le projet)
+
 
 *(En développement, la base de données configurée par défaut est **SQLite**, donc vous n'avez pas besoin d'installer MySQL ou PostgreSQL, le fichier sera généré automatiquement).*
 
-## 🚀 Guide d'Installation
+##  Guide d'Installation
 
 ### 1. Cloner le dépôt
 Récupérez le projet sur votre machine locale et accédez au dossier :
@@ -54,7 +54,7 @@ php artisan migrate --seed
 
 ---
 
-## 💻 Comment Lancer le Projet
+##  Comment Lancer le Projet
 
 ### Cas 1 : En phase de développement
 Pour lancer l'application en développement, utilisez la commande suivante qui va démarrer simultanément le serveur Local PHP, le serveur Vite (pour rechargement à chaud), et l'écoute de la queue de jobs :
@@ -81,7 +81,7 @@ Vous pourrez alors vous connecter sur l'URL indiquée par le terminal (ex: `http
 
 ---
 
-## 👨‍💻 Utilisateurs par défaut (Pour se connecter)
+##  Utilisateurs par défaut (Pour se connecter)
 Une fois les seeders passés, vous pourrez vous connecter avec plusieurs types de rôles avec l'email et le mot de passe basiques générés (gouvernés par les Seeders que vous avez exécutés pour l'application).
 
 *(Vérifiez les fichiers dans `database/seeders/` ou le code dans `DatabaseSeeder.php` pour voir l'historique des mots de passe exacts mis en place pour les utilisateurs de tests).*

@@ -49,22 +49,24 @@ COPY --from=frontend /app/public/build ./public/build
 # Run post-install scripts
 RUN composer dump-autoload --optimize
 
-# Create SQLite database and storage directories
+# Create storage directories and SQLite DB
 RUN mkdir -p database storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
     && touch database/database.sqlite \
     && chmod -R 775 storage bootstrap/cache database \
     && chown -R www-data:www-data storage bootstrap/cache database
 
-# Copy .env.example as .env if .env doesn't exist, then generate key and cache config
-RUN cp .env.example .env \
-    && php artisan key:generate --force \
+# Copy .env.example as base .env (NO config cache here - done at runtime)
+RUN cp .env.example .env
+
+# Expose port
+EXPOSE 10000
+
+# Start: generate key, run migrations, cache config at runtime with real env vars, then serve
+CMD php artisan key:generate --force \
+    && php artisan config:clear \
     && php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache \
-    && php artisan migrate --force
-
-# Expose port (Render sets the PORT env variable)
-EXPOSE 10000
-
-# Start command - Render sets PORT env var
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+    && php artisan migrate --force \
+    && php artisan db:seed --force \
+    && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
